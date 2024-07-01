@@ -13,18 +13,19 @@ const UserBankAccountModal = ( props ) => {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [banks, setBanks] = useState([]);
     const [bankAccountTypes, setBankAccountTypes] = useState([]);
-    const [selectedBank, setSelectedBank] = useState(`${bankAccount?.bankNameID}` || 0);
-    const [selectedBankAccountType, setSelectedBankAccountType] = useState(`${bankAccount?.accountTypeID}` || 0);
+    const [selectedBank, setSelectedBank] = useState(`${bankAccount?.bankNameID}` || "");
+    const [selectedBankAccountType, setSelectedBankAccountType] = useState(`${bankAccount?.accountTypeID}` || "");
 
     const [formValues, setFormValues] = useState({
         accountHolder: bankAccount?.accountHolder || "",
         accountNumber: bankAccount?.accountNumber || "",
         bankNameID: bankAccount?.bankNameID || "",
         accountTypeID : bankAccount?.accountTypeID  || "",
-        isFavorite: bankAccount?.isFavorite || false,
         userId: userData.userId,
     });
-    
+
+    console.log("dasd", formValues);
+
 
     useEffect(() => {
         const fetchBanks = async () => {

@@ -63,16 +63,17 @@ const BankAccountCard = ({ bankAccount, userData, refreshUserBankAccounts }) => 
                             onClick={handleSetFavorite}>
                                 <FontAwesomeIcon icon={ bankAccount.isFavorite ? faStar : faStarRegular}/>
                             </Button>
-                            <Avatar alt="Avatar" size='md' name={bankAccount.accountHolder}/>
+                            <Avatar alt="Avatar" size='md' name={bankAccount.bank.name}/>
                         </div>
                         <div className='w-full flex flex-col sm:flex-row justify-between gap-2'>
                             <div>
                                 <div className='flex gap-2 mb-2'>
-                                    <h4>{bankAccount.accountHolder}</h4>
+                                    <h4>{bankAccount.bank.name}</h4>
                                     <Chip color={bankAccount.isFavorite ? 'success' : 'default'} size="sm" variant="flat">
                                         {bankAccount.isFavorite ? 'favorito' : 'No favorito'}
                                     </Chip>
                                 </div>
+                                <p>{bankAccount.bankAccountType.name}</p>
                                 <p>{bankAccount.accountHolder}</p>
                                 <p>{bankAccount.accountNumber }</p>
                             </div>

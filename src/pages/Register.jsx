@@ -6,7 +6,7 @@ import AuthService from "../services/auth.service";
 import {parseDate, getLocalTimeZone} from "@internationalized/date";
 import {useDateFormatter} from "@react-aria/i18n";
 
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 import {Input, Button, DatePicker, Link} from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -133,7 +133,6 @@ const Register = () => {
                             <p>o usa tu cuenta</p>
                         </div>
                         {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}
-                        <Toaster richColors closeButton position="bottom-right"/>
                         <form onSubmit={handleRegister} className="space-y-4">
                             <Input isRequired type="text" label="Username" placeholder="Ingrese su username" value={username} onChange={(e) => setUsername(e.target.value)}/>
                             <Input isRequired type="email" label="Correo" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)}/>

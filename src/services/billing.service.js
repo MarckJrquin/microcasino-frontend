@@ -53,27 +53,6 @@ const getUserBankAccounts = async ( userId ) => {
 }
 
 
-const getUserPaymentCard = async ( userId, cardId ) => {
-    try {
-        const response = await axios.get(`${API_URL}/${userId}/payment-card/${cardId}`);
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-
-}
-
-
-const getUserPaymentCards = async ( userId ) => {
-    try {
-        const response = await axios.get(`${API_URL}/user/${userId}/payment-cards`);
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-}
-
-
 const createBank = async ( name ) => {
     try {
         const response = await axios.post(
@@ -108,19 +87,6 @@ const createUserBankAccount = async ( bankAccountData ) => {
         const response = await axios.post(
             `${API_URL}/user/create/bank-account`, 
             {...bankAccountData}
-        );
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-}
-
-
-const createUserPaymentCard = async ( cardData ) => {
-    try {
-        const response = await axios.post(
-            `${API_URL}/user/create/payment-card`, 
-            {...cardData}
         );
         return handleResponse(response);
     } catch (error) {
@@ -168,37 +134,11 @@ const updateUserBankAccount = async ( bankAccountId, bankAccountData ) => {
 }
 
 
-const updateUserPaymentCard = async ( cardId, cardData ) => {
-    try {
-        const response = await axios.put(
-            `${API_URL}/user/update/payment-card/${cardId}`, 
-            {...cardData}
-        );
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-}
-
-
 const setFavoriteBankAccount = async ( id, userId ) => {
     try {
         const response = await axios.put(
             `${API_URL}/user/set/favorite-bank-account`, 
             {id, userId}
-        );
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-}
-
-
-const setFavoritePaymentCard = async ( userId, id ) => {
-    try {
-        const response = await axios.put(
-            `${API_URL}/user/set/favorite-payment-card`, 
-            {userId, id}
         );
         return handleResponse(response);
     } catch (error) {
@@ -244,18 +184,6 @@ const deleteUserBankAccount = async ( id, userId ) => {
     }
 }
 
-const deleteUserPaymentCard = async ( id, userId ) => {
-    try {
-        const response = await axios.delete(
-            `${API_URL}/user/delete/payment-card`,
-            { id, userId }
-        );
-        return handleResponse(response);
-    } catch (error) {
-        handleError(error);
-    }
-
-}
 
 
 const BillingService = {
@@ -263,22 +191,16 @@ const BillingService = {
     getBankAccountTypes,
     getUserBankAccount,
     getUserBankAccounts,
-    getUserPaymentCard,
-    getUserPaymentCards, 
     createBank,
     createBankAccountType,
     createUserBankAccount,
-    createUserPaymentCard,
     updateBank,
     updateBankAccountType,
     updateUserBankAccount,
-    updateUserPaymentCard,
     setFavoriteBankAccount,
-    setFavoritePaymentCard,
     deleteBank,
     deleteBankAccountType,
     deleteUserBankAccount,
-    deleteUserPaymentCard
 }
 
 

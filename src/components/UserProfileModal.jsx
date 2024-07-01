@@ -19,7 +19,7 @@ const isValidDate = (date) => {
 
 const UserProfileModal = ( props ) => {
 
-    const { open, onClose, profileData } = props;
+    const { open, onClose, profileData, refreshProfileData } = props;
 
     const [formData, setFormData] = useState(profileData);
 
@@ -41,6 +41,7 @@ const UserProfileModal = ( props ) => {
             await ProfileService.editProfile({...formData});
             toast.success("Perfil actualizado exitosamente");
             onClose();
+            refreshProfileData();
         } catch (error) {
             toast.error(error.message || 'Error actualizando el perfil');
         }

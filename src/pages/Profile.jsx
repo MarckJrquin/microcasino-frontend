@@ -71,55 +71,15 @@ const Profile = () => {
         try {
             const data2 = await BillingService.getUserBankAccounts(profileData.userId);
             setUserBankAccounts(data2);
+            console.log(data2);
         } catch (error) {
             toast.error(error.message || 'Error desconocido');
         }
     };
 
-    // useEffect(() => {
-    //     if (!isLoggedIn) {
-    //         navigate('/login');
-    //     }
-
-    //     const fetchProfileData = async () => {
-    //         try {
-    //             const data = await ProfileService.getProfileData();
-    //             setProfileData(data);
-    //             setAddresses(data.addresses);
-    //             console.log(data);
-    //         } catch (error) {
-    //             toast.error(error.message || 'Error desconocido');
-    //         }
-    //     };
-
-    //     const fetchUserBankAccounts = async () => {
-    //         try {
-    //             console.log(profileData.userId);
-    //             const data2 = await BillingService.getUserBankAccounts( profileData.userId );
-    //             setUserBankAccounts(data2);
-    //             console.log(data2);
-    //         } catch (error) {
-    //             toast.error(error.message || 'Error desconocido');
-    //         }
-    //     };
-
-    //     // const fetchPaymentCards = async () => {
-    //     //     try {
-    //     //         const data = await BillingService.getUserPaymentCards( profileData.id );
-    //     //         setPaymentCards(data);
-    //     //     } catch (error) {
-    //     //         toast.error(error.message || 'Error desconocido');
-    //     //     }
-    //     // }
-
-        
-
-    //     if (isLoggedIn) {
-    //         fetchProfileData();
-    //         // fetchPaymentCards();
-    //         fetchUserBankAccounts();
-    //     }
-    // }, [isLoggedIn, profileRefreshFlag]);
+    const refreshProfileData = () => {
+        setProfileRefreshFlag(prev => !prev);
+    }
 
     const refreshAddresses = () => {
         setProfileRefreshFlag(prev => !prev);
@@ -438,6 +398,7 @@ const Profile = () => {
                 profileData={profileData}
                 open={openUserProfileModal} 
                 onClose={handleCloseModal}
+                refreshProfileData={refreshProfileData}
             /> 
 
             <UserAddressModal
