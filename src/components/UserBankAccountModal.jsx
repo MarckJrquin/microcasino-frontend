@@ -24,9 +24,6 @@ const UserBankAccountModal = ( props ) => {
         userId: userData.userId,
     });
 
-    console.log("dasd", formValues);
-
-
     useEffect(() => {
         const fetchBanks = async () => {
           try {

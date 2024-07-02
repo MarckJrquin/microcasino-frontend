@@ -72,7 +72,6 @@ const Profile = () => {
         try {
             const data2 = await BillingService.getUserBankAccounts(profileData.userId);
             setUserBankAccounts(data2);
-            console.log(data2);
         } catch (error) {
             toast.error(error.message || 'Error desconocido');
         }
