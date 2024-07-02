@@ -11,9 +11,10 @@ import BillingService from '../services/billing.service';
 import UserProfileModal from '../components/UserProfileModal';
 import UserAddressModal from '../components/UserAddressModal';
 import UserBankAccountModal from '../components/UserBankAccountModal';
+import UserPaymentCardModal from '../components/UserPaymentCardModal';
 import AddressCard from '../components/AddressCard';
-import PaymentCard from '../components/PaymentCard';
 import BankAccountCard from '../components/BankAccountCard';
+import PaymentCard from '../components/PaymentCard';
 
 
 // UI Components - NextUI
@@ -22,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCirclePlus, faBuildingColumns, faUserPen, faPenToSquare, faUser, faLocationDot, faMapLocationDot, faGamepad, faReceipt, faCalendar, faLock, faWallet, faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { Button, Avatar, Input, DatePicker, Tabs, Tab, Card, CardBody, Select, SelectItem, Modal, ModalBody, ModalContent, ModalHeader, ModalFooter } from '@nextui-org/react';
 import {parseDate} from "@internationalized/date";
-import UserPaymentCardModal from '../components/UserPaymentCardModal';
+
 
 
 // Profile Component
