@@ -18,6 +18,8 @@ import AdminBoard from "../pages/AdminBoard";
 import ModeratorBoard from "../pages/ModeratorBoard";
 
 import Exchange from "../pages/Exchange";
+import PaymentSuccess from "../pages/PaymentSuccess";
+import PaymentCancel from "../pages/PaymentCancel";
 
 
 const App = () => {
@@ -43,6 +45,9 @@ const App = () => {
         {/* shop routes */}
         <Route path="/promotions" element={<Exchange />} />
         <Route path="/exchange" element={<Exchange />} />
+        <Route path="/payment/cancel" element={<Exchange />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/cancel" element={<PaymentCancel />} />
 
         {/* catch all */}
         <Route path="*" element={<PageNotFound />} />   

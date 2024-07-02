@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
+import ProfileService from '../services/profile.service';
 import ProductService from '../services/products.service'; 
+import BillingService from '../services/billing.service';
 
 import ProductCard from '../components/ProductCards';
 
@@ -15,11 +17,27 @@ import {parseDate} from "@internationalized/date";
 
 
 const Exchange = () => {
+
+    const [profileData, setProfileData] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
     useEffect(() => {
+
+        const fetchProfileData = async () => {
+            try {
+                const data = await ProfileService.getProfileData();
+                setProfileData(data);
+            } catch (error) {
+                setError(error.message);
+            }
+        }
+
         const fetchProducts = async () => {
             try {
                 const data = await ProductService.getAllProducts();
@@ -31,8 +49,25 @@ const Exchange = () => {
             }
         };
 
+        if(isLoggedIn){
+            fetchProfileData();
+        }
+ 
         fetchProducts();
     }, []);
+
+    const handlePurchase = async (product) => {
+        try {
+            const response = await BillingService.createCheckoutSession(product, profileData.userId);
+
+            console.log(response.session.url);
+            if (response.session.url) {
+                window.location.assign(response.session.url);
+            }
+        } catch (error) {
+            toast.error(error.message || "Error processing the purchase");
+        }
+    };
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
@@ -51,7 +86,11 @@ const Exchange = () => {
                 </div>
                 <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
                     {products.map((product) => (
-                        <ProductCard product={product} key={product.id} />
+                        <ProductCard 
+                        product={product} 
+                        key={product.id} 
+                        onPurchase={handlePurchase}
+                        />
                     ))}
                 </div>
             </div>

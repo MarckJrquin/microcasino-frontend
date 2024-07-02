@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCreditCard, faCoins, faDollarSign } from "@fortawesome/free-solid-svg-icons";
 import { Button, Card, CardHeader, CardBody, CardFooter, Image} from '@nextui-org/react';
 
+import BillingService from '../services/billing.service';
 
 const ProductCards = ( props ) => {
 
-    const { product } = props;
+    const { product, onPurchase  } = props;
 
     return (
         <div key={product.id} >
@@ -38,7 +39,14 @@ const ProductCards = ( props ) => {
                         </p>
                     </div>
                     </div>
-                    <Button radius="full" size="sm" color="success" variant='shadow' startContent={<FontAwesomeIcon icon={faCreditCard}/>}>
+                    <Button 
+                        radius="full" 
+                        size="sm" 
+                        color="success" 
+                        variant='shadow' 
+                        startContent={<FontAwesomeIcon icon={faCreditCard}/>}
+                        onPress={() => onPurchase(product)}
+                    >
                         Comprar
                     </Button>
                 </CardFooter>

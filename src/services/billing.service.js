@@ -184,6 +184,16 @@ const deleteUserBankAccount = async ( id, userId ) => {
 }
 
 
+const createCheckoutSession = async ( product, userId) => {
+    try {
+        const response = await axios.post(`${API_URL}/create-checkout-session`, { ...product, userId });
+        console.log(response);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
 
 const BillingService = {
     getBanks,
@@ -200,6 +210,7 @@ const BillingService = {
     deleteBank,
     deleteBankAccountType,
     deleteUserBankAccount,
+    createCheckoutSession
 }
 
 
