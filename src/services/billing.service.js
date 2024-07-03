@@ -195,6 +195,16 @@ const createCheckoutSession = async ( product, userId) => {
 }
 
 
+const getTrasactionDetails = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/transaction-details`);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+
 const BillingService = {
     getBanks,
     getBankAccountTypes,
@@ -210,7 +220,8 @@ const BillingService = {
     deleteBank,
     deleteBankAccountType,
     deleteUserBankAccount,
-    createCheckoutSession
+    createCheckoutSession,
+    getTrasactionDetails
 }
 
 

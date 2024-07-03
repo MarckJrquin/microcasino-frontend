@@ -1,16 +1,20 @@
 import React, {useState, useEffect} from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import AuthService from "../services/auth.service";
 
-import {parseDate, getLocalTimeZone} from "@internationalized/date";
-import {useDateFormatter} from "@react-aria/i18n";
+import VerifyEmailModal from '../components/VerifyEmailModal';
 
 import { toast } from 'sonner'
 import {Input, Button, DatePicker, Link} from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
+
+import {parseDate, getLocalTimeZone} from "@internationalized/date";
+import {useDateFormatter} from "@react-aria/i18n";
+
 
 const isValidDate = (date) => {
     if (!date) return false;
@@ -33,6 +37,8 @@ const Register = () => {
     const [birthDate, setBirthDate] = useState(parseDate("1999-10-30"));
     const [birthDateError, setBirthDateError] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [registerData, setRegisterData ] = useState(null);
+    const [openVerifyEmailModal, setOpenVerifyEmailModal] = useState(false);
 
     const [isVisible, setIsVisible] = React.useState(false);
     const [isVisibleB, setIsVisibleB] = React.useState(false);
@@ -41,10 +47,6 @@ const Register = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    // Date formatter for yyyy-MM-dd format
-    const dateFormatter = useDateFormatter({ dateStyle: "short" });
-
 
     const { isLoggedIn } = useSelector((state) => state.auth);
 
@@ -73,7 +75,7 @@ const Register = () => {
         }
 
         try {
-            await AuthService.signup({
+            const response = await AuthService.signup({
                 username,
                 email,
                 password,
@@ -83,12 +85,9 @@ const Register = () => {
                 birthDate: formattedBirthDate,
             });
 
-            toast.success('Usuario registrado correctamente');
-            
-            setTimeout(() => {
-                navigate("/login");
-                window.location.reload();
-            }, 1000);
+            setRegisterData(response);
+            handleVerifyEmailModal();
+            toast.success(response.message || 'Usuario registrado correctamente');
         } catch (error) {
             setErrorMessage(error.message);
             toast.error(error.message);
@@ -105,6 +104,15 @@ const Register = () => {
             setBirthDateError("");
         }
     };
+
+
+    const handleVerifyEmailModal = () => {
+        setOpenVerifyEmailModal(true);
+    }
+
+    const handleCloseVerifyEmailModal = () => {
+        setOpenVerifyEmailModal(false);
+    }
 
 
     return (
@@ -134,11 +142,11 @@ const Register = () => {
                         </div>
                         {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}
                         <form onSubmit={handleRegister} className="space-y-4">
-                            <Input isRequired type="text" label="Username" placeholder="Ingrese su username" value={username} onChange={(e) => setUsername(e.target.value)}/>
-                            <Input isRequired type="email" label="Correo" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                            <Input isRequired type="text" label="Nombre" placeholder="Ingrese su nombre" value={name} onChange={(e) => setName(e.target.value)}/>
-                            <Input isRequired type="text" label="Apellido" placeholder="Ingrese su apellido" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
-                            <Input isRequired type="text" label="Cédula" placeholder="Ingrese su cédula" value={identification} onChange={(e) => setIdentification(e.target.value)}/>
+                            <Input isRequired isClearable type="text" label="Username" placeholder="Ingrese su username" value={username} onChange={(e) => setUsername(e.target.value)} onClear={(e) => setUsername("")} />
+                            <Input isRequired type="email" label="Correo" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)} onClear={(e) => setEmail("")} />
+                            <Input isRequired type="text" label="Nombre" placeholder="Ingrese su nombre" value={name} onChange={(e) => setName(e.target.value)} onClear={(e) => setName("")} />
+                            <Input isRequired type="text" label="Apellido" placeholder="Ingrese su apellido" value={lastName} onChange={(e) => setLastName(e.target.value)} onClear={(e) => setLastName("")} />
+                            <Input isRequired type="text" label="Cédula" placeholder="Ingrese su cédula" value={identification} onChange={(e) => setIdentification(e.target.value)} onClear={(e) => setIdentification("")} />
                             <DatePicker isRequired showMonthAndYearPickers errorMessage={birthDateError} formatOptions={{ year: "numeric", month: "2-digit", day: "2-digit" }} label="Fecha de Nacimiento" value={birthDate} onChange={handleDateChange}/>           
                             <Input 
                                 isRequired 
@@ -186,6 +194,11 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+
+            <VerifyEmailModal 
+            open={openVerifyEmailModal} 
+            onClose={handleCloseVerifyEmailModal} 
+            registerData={registerData} />
         </>
     );
 };
