@@ -13,7 +13,6 @@ import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 import {parseDate, getLocalTimeZone} from "@internationalized/date";
-import {useDateFormatter} from "@react-aria/i18n";
 
 
 const isValidDate = (date) => {
@@ -27,84 +26,107 @@ const isValidDate = (date) => {
 
 
 const Register = () => {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [identification, setIdentification] = useState("");
-    const [name, setName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [birthDate, setBirthDate] = useState(parseDate("1999-10-30"));
-    const [birthDateError, setBirthDateError] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        identification: "",
+        name: "",
+        lastName: "",
+        birthDate: parseDate("1999-10-30")
+    });
     const [registerData, setRegisterData ] = useState(null);
+    const [errors, setErrors] = useState({});
     const [openVerifyEmailModal, setOpenVerifyEmailModal] = useState(false);
-
-    const [isVisible, setIsVisible] = React.useState(false);
-    const [isVisibleB, setIsVisibleB] = React.useState(false);
-    const toggleVisibility = () => setIsVisible(!isVisible);
-    const toggleVisibilityB = () => setIsVisibleB(!isVisibleB);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isVisibleB, setIsVisibleB] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const { isLoggedIn } = useSelector((state) => state.auth);
 
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/home');
         }
-    }, [navigate]);
+    }, [isLoggedIn, navigate]);
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const handleClearInputChange = (name) => {
+        setFormData({ ...formData, [name]: '' });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const handleDateChange = (date) => {
+        setFormData({ ...formData, birthDate: date });
+        if (!isValidDate(date)) {
+            setErrors({ ...errors, birthDate: "Por favor, ingrese una fecha valida" });
+        } else {
+            setErrors({ ...errors, birthDate: "" });
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.username) newErrors.username = "El username es requerido";
+        if (!formData.email) newErrors.email = "El correo es requerido";
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "El correo no tiene un formato adecuado";
+        if (!formData.name) newErrors.name = "El nombre es requerido";
+        if (!formData.lastName) newErrors.lastName = "El apellido es requerido";
+        if (!formData.identification) newErrors.identification = "La cédula es requerida";
+        if (!formData.password) newErrors.password = "La contraseña es requerida";
+        if (!formData.confirmPassword) newErrors.confirmPassword = "La confirmación de la contraseña es requerida";
+        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Las contraseñas no coinciden";
+        if (!isValidDate(formData.birthDate)) newErrors.birthDate = "Por favor, ingrese una fecha valida";
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const clearForm = () => {
+        setFormData({
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            identification: "",
+            name: "",
+            lastName: "",
+            birthDate: parseDate("1999-10-30")
+        });
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
 
-        const formattedBirthDate = birthDate.toString({ calendar: 'gregory', timeZone: getLocalTimeZone() });
-
-        if (password !== confirmPassword) {
-            setErrorMessage("Las contraseñas no coinciden");
-            toast.error('Las contraseñas no coinciden');
-            return;
-        }
-
-        if (!isValidDate(birthDate)) {
-            setBirthDateError("Por favor, ingrese una fecha valida");
-            toast.error('Por favor, ingrese una fecha valida');
-            return;
-        }
+        const formattedBirthDate = formData.birthDate.toString({ calendar: 'gregory', timeZone: getLocalTimeZone() });
 
         try {
             const response = await AuthService.signup({
-                username,
-                email,
-                password,
-                name,
-                lastName,
-                identification,
+                ...formData,
                 birthDate: formattedBirthDate,
             });
 
             setRegisterData(response);
-            handleVerifyEmailModal();
+            setOpenVerifyEmailModal(true);
             toast.success(response.message || 'Usuario registrado correctamente');
+            clearForm();
         } catch (error) {
-            setErrorMessage(error.message);
+            setErrors({ ...errors, general: error.message });
             toast.error(error.message);
         }
     };
 
-
-    const handleDateChange = (date) => {
-        setBirthDate(date);
-        if (!isValidDate(date)) {
-            setBirthDateError("Por favor, ingrese una fecha valida");
-            toast.error('Por favor, ingrese una fecha valida');
-        } else {
-            setBirthDateError("");
-        }
-    };
-
+    const toggleVisibility = () => setIsVisible(!isVisible);
+    const toggleVisibilityB = () => setIsVisibleB(!isVisibleB);
 
     const handleVerifyEmailModal = () => {
         setOpenVerifyEmailModal(true);
@@ -113,7 +135,6 @@ const Register = () => {
     const handleCloseVerifyEmailModal = () => {
         setOpenVerifyEmailModal(false);
     }
-
 
     return (
         <> 
@@ -140,49 +161,139 @@ const Register = () => {
                         <div className="mt-4 mb-4 text-sm text-gray-500 dark:text-gray-300 text-center">
                             <p>o usa tu cuenta</p>
                         </div>
-                        {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}
+                        {errors.general && <div className="text-red-500 text-center mb-4">{errors.general}</div>}
                         <form onSubmit={handleRegister} className="space-y-4">
-                            <Input isRequired isClearable type="text" label="Username" placeholder="Ingrese su username" value={username} onChange={(e) => setUsername(e.target.value)} onClear={(e) => setUsername("")} />
-                            <Input isRequired type="email" label="Correo" placeholder="Ingrese su correo" value={email} onChange={(e) => setEmail(e.target.value)} onClear={(e) => setEmail("")} />
-                            <Input isRequired type="text" label="Nombre" placeholder="Ingrese su nombre" value={name} onChange={(e) => setName(e.target.value)} onClear={(e) => setName("")} />
-                            <Input isRequired type="text" label="Apellido" placeholder="Ingrese su apellido" value={lastName} onChange={(e) => setLastName(e.target.value)} onClear={(e) => setLastName("")} />
-                            <Input isRequired type="text" label="Cédula" placeholder="Ingrese su cédula" value={identification} onChange={(e) => setIdentification(e.target.value)} onClear={(e) => setIdentification("")} />
-                            <DatePicker isRequired showMonthAndYearPickers errorMessage={birthDateError} formatOptions={{ year: "numeric", month: "2-digit", day: "2-digit" }} label="Fecha de Nacimiento" value={birthDate} onChange={handleDateChange}/>           
                             <Input 
-                                isRequired 
-                                label="Contraseña" 
-                                placeholder="Ingrese su contraseña" 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)}
-                                endContent={
-                                    <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
-                                      {isVisible ? (
-                                        <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
-                                      ) : (
-                                        <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
-                                      )}
-                                    </button>
-                                  }
-                                type={isVisible ? "text" : "password"}
+                            isRequired 
+                            isClearable
+                            type="text" 
+                            name="username"
+                            label="Username" 
+                            placeholder="Ingrese su username" 
+                            value={formData.username}
+                            onChange={handleInputChange}
+                            onClear={() => handleClearInputChange("username")}
+                            isInvalid={!!errors.username}
+                            errorMessage={errors.username}
                             />
+
                             <Input 
-                                isRequired 
-                                label="Confirmar Contraseña" 
-                                placeholder="Confirme su contraseña" 
-                                value={confirmPassword} 
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                endContent={
-                                    <button className="focus:outline-none" type="button" onClick={toggleVisibilityB}>
-                                      {isVisibleB ? (
-                                        <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
-                                      ) : (
-                                        <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
-                                      )}
-                                    </button>
-                                  }
-                                type={isVisibleB ? "text" : "password"}
+                            isRequired
+                            isClearable
+                            type="text"
+                            name="email"
+                            label="Correo"
+                            placeholder="Ingrese su correo"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            onClear={() => handleClearInputChange("email")}
+                            isInvalid={!!errors.email}
+                            errorMessage={errors.email}
                             />
-                            <Button type="submit" color="primary" size="lg" className="w-full" variant="shadow">Registrate</Button> 
+
+                            <Input 
+                            isRequired
+                            isClearable
+                            type="text"
+                            name="name"
+                            label="Nombre"
+                            placeholder="Ingrese su nombre"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            onClear={() => handleClearInputChange("name")}
+                            isInvalid={!!errors.name}
+                            errorMessage={errors.name}
+                            />
+
+                            <Input 
+                            isRequired
+                            isClearable
+                            type="text"
+                            name="lastName"
+                            label="Apellido"
+                            placeholder="Ingrese su apellido"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            onClear={() => handleClearInputChange("lastName")}
+                            isInvalid={!!errors.lastName}
+                            errorMessage={errors.lastName}
+                            />
+
+                            <Input 
+                            isRequired
+                            isClearable
+                            type="text"
+                            name="identification"
+                            label="Cédula"
+                            placeholder="Ingrese su cédula"
+                            value={formData.identification}
+                            onChange={handleInputChange}
+                            onClear={() => handleClearInputChange("identification")}
+                            isInvalid={!!errors.identification}
+                            errorMessage={errors.identification}
+                            />
+
+                            <DatePicker 
+                            isRequired 
+                            showMonthAndYearPickers 
+                            errorMessage={errors.birthDate}
+                            formatOptions={{ year: "numeric", month: "2-digit", day: "2-digit" }} 
+                            label="Fecha de Nacimiento" 
+                            value={formData.birthDate} 
+                            onChange={handleDateChange}
+                            isInvalid={!!errors.birthDate}
+                            />           
+                            
+                            <Input 
+                            isRequired 
+                            name="password"
+                            label="Contraseña" 
+                            placeholder="Ingrese su contraseña" 
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                                    {isVisible ? (
+                                        <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
+                                    ) : (
+                                        <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
+                                    )}
+                                </button>
+                            }
+                            type={isVisible ? "text" : "password"}
+                            isInvalid={!!errors.password}
+                            errorMessage={errors.password}
+                            />
+                            
+                            <Input 
+                            isRequired 
+                            name="confirmPassword"
+                            label="Confirmar Contraseña" 
+                            placeholder="Confirme su contraseña" 
+                            value={formData.confirmPassword}
+                            onChange={handleInputChange}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibilityB}>
+                                    {isVisibleB ? (
+                                        <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
+                                    ) : (
+                                        <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
+                                    )}
+                                </button>
+                            }
+                            type={isVisibleB ? "text" : "password"}
+                            isInvalid={!!errors.confirmPassword}
+                            errorMessage={errors.confirmPassword}
+                            />
+
+                            <Button 
+                            type="submit" 
+                            color="primary" 
+                            size="lg" 
+                            className="w-full" 
+                            variant="shadow">
+                                Registrate
+                            </Button> 
                         </form>
                         <div className="mt-4 text-sm text-gray-500 dark:text-gray-300 text-center">
                             <p>¿Ya tienes una cuenta?
@@ -198,7 +309,8 @@ const Register = () => {
             <VerifyEmailModal 
             open={openVerifyEmailModal} 
             onClose={handleCloseVerifyEmailModal} 
-            registerData={registerData} />
+            registerData={registerData} 
+            />
         </>
     );
 };

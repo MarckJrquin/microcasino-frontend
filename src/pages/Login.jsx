@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { signin } from "../redux/slices/auth";
-import { toggleTheme } from '../redux/slices/theme';
 
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 import { Input, Button, Link} from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -13,18 +12,18 @@ import { faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [formData, setFormData] = useState({
+        username: "",
+        password: "",
+    });
 
+    const [errors, setErrors] = useState({});
+    const [errorMessage, setErrorMessage] = useState('');
     const [isVisible, setIsVisible] = React.useState(false);
-    const toggleVisibility = () => setIsVisible(!isVisible);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const { isLoggedIn } = useSelector((state) => state.auth);
-    const theme = useSelector((state) => state.theme.theme);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -32,19 +31,44 @@ const Login = () => {
         }
     }, [navigate]);
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const handleClearInputChange = (name) => {
+        setFormData({ ...formData, [name]: '' });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.username) newErrors.username = "El username es requerido";
+        if (!formData.password) newErrors.password = "La contraseña es requerida";
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const clearForm = () => {
+        setFormData({
+            username: "",
+            password: "",
+        });
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        if (!username || !password) {
-            setErrorMessage('Usuario y contraseña son requeridos');
-            return;
-        }
+        if (!validateForm()) return;
 
         try {
-            const resultAction = await dispatch(signin({username, password}));
+            const resultAction = await dispatch(signin({...formData}));
 
             if (signin.fulfilled.match(resultAction)) {
                 toast.success('Bienvenido');
+                clearForm();
                 setTimeout(() => {
                     navigate('/home');
                     window.location.reload();
@@ -60,6 +84,8 @@ const Login = () => {
             toast.error(errorMsg);
         }
     }
+
+    const toggleVisibility = () => setIsVisible(!isVisible);
 
     return (
         <> 
@@ -89,45 +115,48 @@ const Login = () => {
 
                         { errorMessage && <p className="text-red-600 text-center mb-4">{errorMessage}</p> }
 
-                        <Toaster 
-                            richColors 
-                            closeButton 
-                            theme={theme} 
-                            position="bottom-right"
-                        />
-
                         <form onSubmit={handleLogin} className="space-y-4">
                             <Input 
-                                isRequired 
-                                type="text" 
-                                label="Username" 
-                                placeholder="Ingrese su username" 
-                                value={username} 
-                                onChange={(e) => setUsername(e.target.value)} 
+                            isRequired 
+                            isClearable
+                            type="text" 
+                            name="username"
+                            label="Username" 
+                            placeholder="Ingrese su username" 
+                            value={formData.username} 
+                            onChange={handleInputChange} 
+                            onClear={() => handleClearInputChange("username")}
+                            isInvalid={!!errors.username}
+                            errorMessage={errors.username}
                             />
+
                             <Input 
-                                isRequired 
-                                label="Contraseña" 
-                                placeholder="Ingrese su contraseña" 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)}
-                                endContent={
-                                    <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
-                                      {isVisible ? (
+                            isRequired 
+                            name="password"
+                            label="Contraseña" 
+                            placeholder="Ingrese su contraseña" 
+                            value={formData.password} 
+                            onChange={handleInputChange}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                                    {isVisible ? (
                                         <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
-                                      ) : (
+                                    ) : (
                                         <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
-                                      )}
-                                    </button>
-                                  }
-                                type={isVisible ? "text" : "password"}
+                                    )}
+                                </button>
+                              }
+                            type={isVisible ? "text" : "password"}
+                            isInvalid={!!errors.password}
+                            errorMessage={errors.password}
                             />
+
                             <Button 
-                                type="submit" 
-                                color="primary" 
-                                size="lg" 
-                                className="w-full" 
-                                variant="shadow">
+                            type="submit" 
+                            color="primary" 
+                            size="lg" 
+                            className="w-full" 
+                            variant="shadow">
                                 Iniciar Sesión
                             </Button>  
                         </form>
