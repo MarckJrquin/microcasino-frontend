@@ -54,20 +54,28 @@ const signout = async () => {
     }
 }
 
-
-const forgotPassword = async (username, password) => {
+const verifyRegistration = async (token) => {
     try {
-        const response = await axios.put(`${API_URL}/forgotpassword`, { username, password });
+        const response = await axios.get(`${API_URL}/confirm/${token}`);
         return handleResponse(response);
     } catch (error) {
         handleError(error);
     }
 }
 
-
-const verifyRegistration = async (token) => {
+const requestPasswordRecovery = async (email) => {
     try {
-        const response = await axios.get(`${API_URL}/confirm/${token}`);
+        const responde = await axios.post(`${API_URL}/request-password-recovery`, {email})
+        return handleResponse(responde);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+
+const resetPassword = async ( token, newPassword ) => {
+    try {
+        const response = await axios.post(`${API_URL}/reset-password`, { token, newPassword });
         return handleResponse(response);
     } catch (error) {
         handleError(error);
@@ -85,9 +93,10 @@ const AuthService = {
     signin,
     signup,
     signout,
-    forgotPassword,
     verifyRegistration,
-    getCurrentUser
+    getCurrentUser,
+    requestPasswordRecovery,
+    resetPassword
 }
 
 

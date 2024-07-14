@@ -184,9 +184,20 @@ const deleteUserBankAccount = async ( id, userId ) => {
 }
 
 
-const createCheckoutSession = async ( product, userId) => {
+const createCheckoutSessionForProducts = async ( product, userId) => {
     try {
-        const response = await axios.post(`${API_URL}/create-checkout-session`, { ...product, userId });
+        const response = await axios.post(`${API_URL}/create-checkout-session-for-products`, { ...product, userId });
+        console.log(response);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+
+const createCheckoutSessionForCredits = async ( amount, userId) => {
+    try {
+        const response = await axios.post(`${API_URL}/create-checkout-session-for-credits`, { amount, userId });
         console.log(response);
         return handleResponse(response);
     } catch (error) {
@@ -198,6 +209,37 @@ const createCheckoutSession = async ( product, userId) => {
 const getTrasactionDetails = async () => {
     try {
         const response = await axios.get(`${API_URL}/transaction-details`);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+
+const getUserCreditsBalance = async ( userId ) => {
+    try {
+        const response = await axios.get(`${API_URL}/user/${userId}/credits`);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+
+}
+
+
+const getCreditTransactionsHistory = async ( userId ) => {
+    try {
+        const response = await axios.get(`${API_URL}/user/${userId}/transactions`);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+
+const withdrawCredits = async ( credits, userId ) => {
+    try {
+        const response = await axios.post(`${API_URL}/user/withdraw-credits`, { credits, userId });
         return handleResponse(response);
     } catch (error) {
         handleError(error);
@@ -220,8 +262,12 @@ const BillingService = {
     deleteBank,
     deleteBankAccountType,
     deleteUserBankAccount,
-    createCheckoutSession,
-    getTrasactionDetails
+    createCheckoutSessionForProducts,
+    createCheckoutSessionForCredits,
+    getTrasactionDetails,
+    getUserCreditsBalance,
+    getCreditTransactionsHistory,
+    withdrawCredits,
 }
 
 

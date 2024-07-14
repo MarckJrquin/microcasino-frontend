@@ -54,11 +54,11 @@ const PaymentSuccess = () => {
         <section className="bg-white py-8 antialiased dark:bg-zinc-900 md:py-16">
             <div className="mx-auto max-w-2xl px-4 2xl:px-0">
                 <h2 className="text-xl font-semibold text-zinc-900 dark:text-white sm:text-2xl mb-2">
-                    Thanks for your order!
+                    ¡Gracias por tu compra!
                 </h2>
                 <p className="text-zinc-500 dark:text-zinc-400 mb-6 md:mb-8">
-                    Your order <a href="#" className="font-medium text-zinc-900 dark:text-white hover:underline">#{transactionDetails.productId}</a> 
-                    will be processed within 24 hours during working days. We will notify you by email once your order has been shipped.
+                    Tu orden <a href="#" className="font-medium text-zinc-900 dark:text-white hover:underline">#{transactionDetails.productId} - {transactionDetails.productName} </a> 
+                    ha sido procesada exitosamente. A continuación, encontrarás los detalles de tu compra.
                 </p>
                 <div className="space-y-4 sm:space-y-2 rounded-lg border border-zinc-100 bg-zinc-50 p-6 dark:border-zinc-700 dark:bg-zinc-800 mb-6 md:mb-8">
                     <dl className="sm:flex items-center justify-between gap-4">

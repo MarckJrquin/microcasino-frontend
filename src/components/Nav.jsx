@@ -7,16 +7,18 @@ import { toggleTheme } from '../redux/slices/theme';
 import { signout } from "../redux/slices/auth";
 
 import ProfileService from "../services/profile.service";
+import GameService from "../services/game.service";
 
 import { Toaster, toast } from 'sonner';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link, Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar, link} from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoins, faChevronDown, faDiceOne, faDiceTwo, faDiceThree, faDiceFour } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faChevronDown, faDiceOne, faDiceTwo, faDiceThree, faDiceFour, faDice } from "@fortawesome/free-solid-svg-icons";
 
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [profileData, setProfileData] = useState(null);
+  const [gameTypes, setGameTypes] = useState([]);
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -71,9 +73,20 @@ const Nav = () => {
       }
     };
 
+    const fetchGameTypes = async () => {
+      try {
+        const data = await GameService.getGameTypes();
+        setGameTypes(data);
+      } catch (error) {
+        toast.error(error.message || 'Error desconocido');
+      }
+    }
+
     if (isLoggedIn) {
       fetchProfileData();
     }
+
+    fetchGameTypes();
   }, [isLoggedIn]);
 
 
@@ -117,14 +130,16 @@ const Nav = () => {
         />
         <NavbarBrand as={Link} href="/home">
           <FontAwesomeIcon icon={faCoins} className="font-bold text-black dark:text-white"/>
-          <p className="font-bold text-black dark:text-white pl-2">CASINO</p>
+          <p className="font-bold text-black dark:text-white pl-2">
+            MICROCASINO
+          </p>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden md:flex gap-4" justify="center">
         {menuItemsNav.map((item) => (
           item.name === "Juegos" ? (
-            <NavbarItem key={item.name} isActive={location.pathname === item.path}>
+            <NavbarItem key={item.name} isActive={location.pathname === item.path} >
               <Dropdown>
                 <DropdownTrigger>
                   <Button
@@ -144,11 +159,14 @@ const Nav = () => {
                     base: "gap-4",
                   }}
                 >
-                  {gameItems.map((game) => (
+                  {gameTypes.map((game) => (
                     <DropdownItem
-                      key={game.name}
-                      description={game.description}
-                      startContent={game.icon}
+                      key={game.id}
+                      description={game.shortDescription}
+                      startContent={<FontAwesomeIcon icon={faDice} className="text-success"/>}
+                      as={Link}
+                      href={game.url}
+                      className="text-black dark:text-white"
                     >
                       {game.name}
                     </DropdownItem>
@@ -165,62 +183,6 @@ const Nav = () => {
           )
         ))}
       </NavbarContent>
-
-      {/* <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Dropdown>
-          <NavbarItem>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-md"
-                endContent={icons.faChevronDown}
-                radius="sm"
-                variant="light"
-              >
-                Juegos
-              </Button>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu
-            aria-label="ACME features"
-            className="w-[345px]"
-            itemClasses={{
-              base: "gap-4",
-            }}
-          >
-            <DropdownItem
-              key="Ruleta"
-              description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
-              startContent={icons.faDiceOne}
-            >
-              Ruleta
-            </DropdownItem>
-            <DropdownItem
-              key="BlackJack"
-              description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
-              startContent={icons.faDiceTwo}
-            >
-              BlackJack
-            </DropdownItem>
-            <DropdownItem
-              key="Tragamoneda"
-              description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
-              startContent={icons.faDiceThree}
-            >
-              Tragamoneda
-            </DropdownItem>
-            <DropdownItem
-              key="Baccarat"
-              description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
-              startContent={icons.faDiceFour}
-            >
-              Baccarat
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-        </NavbarItem>
-      </NavbarContent> */}
           
       { !isLoggedIn 
       ? 
@@ -264,8 +226,7 @@ const Nav = () => {
                 <p className="font-semibold">{profileData?.email}</p>
               </DropdownItem>
               <DropdownItem key="myprofile" as={Link} href="/profile" className="text-black dark:text-white">Mi Perfil</DropdownItem>
-              <DropdownItem key="editprofile">Editar Perfil</DropdownItem>
-              <DropdownItem key="help">Ayuda</DropdownItem>
+              <DropdownItem key="help" as={Link} href="/help" className="text-black dark:text-white">Ayuda</DropdownItem>
               <DropdownItem key="logout" color="danger" onClick={handleLogout}>
                 Cerrar Sesión
               </DropdownItem>

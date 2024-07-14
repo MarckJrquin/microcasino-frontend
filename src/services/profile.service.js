@@ -43,12 +43,40 @@ const editProfile = async ( profileData ) => {
 }
 
 
-const editPassword = async (oldPassword, newPassword) => {
+const editPassword = async ( data ) => {
     try {
-        const response = await axios.put(`${API_URL}/changepassword`, {oldPassword, newPassword});
+        const response = await axios.put(`${API_URL}/changepassword`, data );
         return handleResponse(response);
     } catch (error) {
         handleError(error);
+    }
+}
+
+
+const uploadProfilePicture = async (profilePictureFile) => {
+    // Crea un objeto FormData para enviar la imagen al servidor
+    const formData = new FormData();
+    formData.append("profilePicture", profilePictureFile);
+  
+    try {
+        // Realiza la solicitud POST utilizando Axios
+        const response = await axios.post(`${API_URL}/profile/upload`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", // Asegúrate de configurar el encabezado correcto para datos multipartes
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response.data.message);
+    }
+}
+
+const deleteProfilePicture = async () => {
+    try {
+        const response = await axios.delete(`${API_URL}/profile/delete`);
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response);
     }
 }
 
@@ -57,7 +85,9 @@ const ProfileService = {
     getProfileData,
     getProfilePhoto,
     editProfile,
-    editPassword
+    editPassword,
+    uploadProfilePicture,
+    deleteProfilePicture
 }
 
 

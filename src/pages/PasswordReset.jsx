@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import AuthService from "../services/auth.service";
 
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 import { Input, Button, Link} from "@nextui-org/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
+import { faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 
-const PasswordRecovery = () => {
+const PasswordReset = () => {
     const [formData, setFormData] = useState({
-        email: "",
+        newPassword: "",
+        confirmNewPassword: "",
     });
     const [errors, setErrors] = useState({});
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const { token } = useParams();
+
+    const [isVisible, setIsVisible] = React.useState(false);
+    const [isVisibleB, setIsVisibleB] = React.useState(false);
+    const toggleVisibility = () => setIsVisible(!isVisible);
+    const toggleVisibilityB = () => setIsVisibleB(!isVisibleB);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const { isLoggedIn } = useSelector((state) => state.auth);
 
     useEffect(() => {
@@ -33,15 +43,11 @@ const PasswordRecovery = () => {
         setErrors({ ...errors, [name]: '' });
     };
 
-    const handleClearInputChange = (name) => {
-        setFormData({ ...formData, [name]: '' });
-        setErrors({ ...errors, [name]: '' });
-    };
-
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.email) newErrors.email = "El correo es requerido";
-        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "El correo no tiene un formato adecuado";
+        if (!formData.newPassword) newErrors.newPassword = "La nueva contraseña es requerida";
+        if (!formData.confirmNewPassword) newErrors.confirmNewPassword = "La confirmación de la nueva contraseña es requerida";
+        if (formData.newPassword !== formData.confirmNewPassword) newErrors.confirmNewPassword = "Las contraseñas no coinciden";
 
         setErrors(newErrors);
 
@@ -50,28 +56,35 @@ const PasswordRecovery = () => {
 
     const clearForm = () => {
         setFormData({
-            email: "",
+            newPassword: "",
+            confirmNewPassword: "",
         });
     };
 
-    const handleRecovery = async (e) => {
+    const handleResetPassword = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
 
-        try {
-            const user = await AuthService.requestPasswordRecovery(formData.email);
+        if (formData.newPassword !== formData.confirmNewPassword) {
+            setErrorMessage("Las contraseñas no coinciden");
+            toast.error('Las contraseñas no coinciden');
+            return;
+        }
 
+        try {
+            const user = await AuthService.resetPassword(token, formData.newPassword);
             if (user) {
-                toast.success(user.message || `Correo para recuperación de contraseña se ha enviado con éxito. Por favor, revise su correo ${email}`);
+                console.log(user);
+                toast.success(user.message || 'Contraseña recuperada con éxito');
 
                 setTimeout(() => {
                     clearForm();
                     navigate("/login");
                     window.location.reload();
-                }, 1500);
+                }, 2000);
             } else {
-                setErrorMessage('Usuario o contraseña incorrectos');
-                toast.error('Usuario o contraseña incorrectos');
+                setErrorMessage(error.message || 'Usuario o contraseña incorrectos');
+                toast.error(error.message || 'Usuario o contraseña incorrectos');
             }
         } catch (error) {
             setErrorMessage(error.message);
@@ -104,26 +117,54 @@ const PasswordRecovery = () => {
                         <div className="mt-4 mb-4 text-sm text-gray-500 dark:text-gray-300 text-center">
                             <p>ingresar datos</p>
                         </div>
-                        
+
                         {errorMessage && <p className="text-red-600 text-cente mb-4r">{errorMessage}</p>}
 
-                        <form onSubmit={handleRecovery} className="space-y-4">
+                        <form onSubmit={handleResetPassword} className="space-y-4">
                             <Input 
                             isRequired 
-                            isClearable
-                            type="text" 
-                            name="email"
-                            label="Correo" 
-                            placeholder="Ingrese su correo" 
-                            value={formData.email}
+                            name="newPassword"
+                            label="Nueva Contraseña" 
+                            placeholder="Ingrese su nueva contraseña" 
+                            value={formData.newPassword} 
                             onChange={handleInputChange}
-                            onClear={() => handleClearInputChange("email")}
-                            isInvalid={!!errors.email}
-                            errorMessage={errors.email}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                                  {isVisible ? (
+                                    <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
+                                  ) : (
+                                    <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
+                                  )}
+                                </button>
+                              }
+                            type={isVisible ? "text" : "password"}
+                            isInvalid={!!errors.newPassword}
+                            errorMessage={errors.newPassword}
+                            />
+
+                            <Input 
+                            isRequired 
+                            name="confirmNewPassword"
+                            label="Confirmar contraseña" 
+                            placeholder="Confirme su contraseña" 
+                            value={formData.confirmNewPassword} 
+                            onChange={handleInputChange}
+                            endContent={
+                                <button className="focus:outline-none" type="button" onClick={toggleVisibilityB}>
+                                  {isVisibleB ? (
+                                    <FontAwesomeIcon icon={faEyeSlash} className="text-lg text-default-400 pointer-events-none"/>
+                                  ) : (
+                                    <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
+                                  )}
+                                </button>
+                              }
+                            type={isVisibleB ? "text" : "password"}
+                            isInvalid={!!errors.confirmNewPassword}
+                            errorMessage={errors.confirmNewPassword}
                             />
 
                             <Button 
-                            type="submit"
+                            type="submit" 
                             color="primary" 
                             size="lg" 
                             className="w-full" 
@@ -145,4 +186,4 @@ const PasswordRecovery = () => {
     );
 }
 
-export default PasswordRecovery;
+export default PasswordReset;

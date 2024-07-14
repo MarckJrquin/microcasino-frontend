@@ -102,7 +102,7 @@ const Footer = () => {
                             <div className="flex items-center text-black dark:text-white">
                                 <FontAwesomeIcon icon={faCoins} className="h-8"/>
                                 <span className="ml-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                                    Casino
+                                    MICROCASINO
                                 </span>
                             </div>
                         </Link>

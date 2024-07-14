@@ -145,7 +145,7 @@ const Login = () => {
                                         <FontAwesomeIcon icon={faEye} className="text-lg text-default-400 pointer-events-none"/>
                                     )}
                                 </button>
-                              }
+                            }
                             type={isVisible ? "text" : "password"}
                             isInvalid={!!errors.password}
                             errorMessage={errors.password}

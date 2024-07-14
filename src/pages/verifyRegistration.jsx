@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import AuthService from '../services/auth.service';
 
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
 import { Button, Link } from '@nextui-org/react';
 
 const VerifyRegistration = () => {
@@ -28,7 +28,6 @@ const VerifyRegistration = () => {
 
   return (
     <div>
-      <Toaster richColors closeButton position="bottom-right"/>
       <section class="py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div class="xl:p-24 gap-32 p-12 rounded-2xl bg-gradient-to-r from-green-400 to-teal-400 flex  justify-between flex-col-reverse lg:flex-row">

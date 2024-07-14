@@ -1,6 +1,72 @@
+import React, { useState, useEffect } from 'react';
+
+import HelpCenterService from '../services/helpCenter.service';
+
+import { Card, CardHeader, CardBody, Input, Textarea, Button } from '@nextui-org/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'sonner';
+
 const Help = () => {
+    const [formData, setFormData] = useState({
+        name: "",
+        lastname: "",
+        email: "",
+        message: ""
+    });
+
+    const [errors, setErrors] = useState({});
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const handleClearInputChange = (name) => {
+        setFormData({ ...formData, [name]: '' });
+        setErrors({ ...errors, [name]: '' });
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.name) newErrors.name = "El Nombre es requerido";
+        if (!formData.lastname) newErrors.lastname = "El apellido es requerido";
+        if (!formData.email) newErrors.email = "El email es requerido";
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "El correo no tiene un formato adecuado";
+        if (!formData.message) newErrors.message = "El mensaje es requerido";
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const clearForm = () => {
+        setFormData({
+            username: "",
+            password: "",
+        });
+    };
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        try {
+            console.log(formData);
+            const response = await HelpCenterService.createRequest(formData);
+            toast.success(response.message || 'Mensaje enviado correctamente');
+            clearForm();
+        } catch (error) {
+            const errorMsg = error.message || 'Error desconocido';
+            setErrorMessage(errorMsg);
+            toast.error(errorMsg);
+        }
+    };
+
     return (
-        <section className="bg-white dark:bg-zinc-900">
+        <section className="px-5 md:px-8 lg:px-16 bg-white dark:bg-zinc-900">
             <div className="container px-6 md:px-16 py-12 mx-auto ">
                 <div>
                     <p className="font-medium text-blue-500 dark:text-blue-400">Contáctanos</p>
@@ -61,35 +127,93 @@ const Help = () => {
                         </div>
                     </div>
 
-                    <div className="p-4 py-6 rounded-lg bg-gray-50 dark:bg-zinc-800 md:p-8">
-                        <form>
-                            <div className="-mx-2 md:items-center md:flex">
-                                <div className="flex-1 px-2">
-                                    <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Nombre</label>
-                                    <input type="text" placeholder="Gatiuska " className="block w-full px-5 py-2.5 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-zinc-900 dark:text-gray-300 dark:border-zinc-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                    <Card className='bg-black-900'>
+                        <form onSubmit={handleSendMessage}>
+                            <div className='flex flex-col p-8 gap-5 lg:gap-6'>
+                                <div className='flex flex-col md:flex-row gap-6'>
+                                    <Input 
+                                    isRequired
+                                    isClearable
+                                    size='lg'
+                                    type='text'
+                                    name='name'
+                                    label="Nombre"
+                                    placeholder="Nombre" 
+                                    labelPlacement="outside"
+                                    value={formData.name} 
+                                    onChange={handleInputChange}
+                                    onClear={() => handleClearInputChange("name")}
+                                    isInvalid={!!errors.name}
+                                    errorMessage={errors.name}
+                                    />
+
+                                    <Input 
+                                    isRequired
+                                    isClearable
+                                    size='lg'
+                                    type='text'
+                                    name='lastname'
+                                    label="Apellido"
+                                    placeholder="Apellido" 
+                                    labelPlacement="outside"
+                                    value={formData.lastname} 
+                                    onChange={handleInputChange}
+                                    onClear={() => handleClearInputChange("lastname")}
+                                    isInvalid={!!errors.lastname}
+                                    errorMessage={errors.lastname}
+                                    />
                                 </div>
 
-                                <div className="flex-1 px-2 mt-4 md:mt-0">
-                                    <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Apellido</label>
-                                    <input type="text" placeholder="Gatinha" className="block w-full px-5 py-2.5 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-zinc-900 dark:text-gray-300 dark:border-zinc-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                                <div>
+                                    <Input 
+                                    isRequired 
+                                    isClearable
+                                    size='lg'
+                                    type='text'
+                                    name='email'
+                                    label="Correo"
+                                    placeholder="Email" 
+                                    labelPlacement="outside"
+                                    value={formData.email} 
+                                    onChange={handleInputChange}
+                                    onClear={() => handleClearInputChange("email")}
+                                    isInvalid={!!errors.email}
+                                    errorMessage={errors.email}
+                                    />
+                                </div>
+
+                                <div>
+                                    <Textarea 
+                                    isRequired 
+                                    isClearable
+                                    size='lg'
+                                    name='message'
+                                    label="Mensaje"
+                                    placeholder="Mensaje" 
+                                    labelPlacement="outside"
+                                    value={formData.message} 
+                                    onChange={handleInputChange}
+                                    onClear={() => handleClearInputChange("message")}
+                                    isInvalid={!!errors.message}
+                                    errorMessage={errors.message}
+                                    />
+                                </div>
+
+                                <div>
+                                    <Button
+                                    type='submit'
+                                    size='md'
+                                    color='primary'
+                                    variant='shadow'
+                                    fullWidth
+                                    startContent={<FontAwesomeIcon icon={faPaperPlane} />}
+                                    >
+                                        Enviar Mensaje
+                                    </Button>
                                 </div>
                             </div>
-
-                            <div className="mt-4">
-                                <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Email</label>
-                                <input type="email" placeholder="gatiuska@gatinha.com" className="block w-full px-5 py-2.5 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-zinc-900 dark:text-gray-300 dark:border-zinc-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
-                            </div>
-
-                            <div className="w-full mt-4">
-                                <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">Mensaje</label>
-                                <textarea className="block w-full h-32 px-5 py-2.5 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg md:h-56 dark:placeholder-gray-600 dark:bg-zinc-900 dark:text-gray-300 dark:border-zinc-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" placeholder="Mensaje"></textarea>
-                            </div>
-
-                            <button className="w-full px-6 py-3 mt-4 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
-                                Enviar Mensaje
-                            </button>
                         </form>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </section>

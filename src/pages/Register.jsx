@@ -116,7 +116,7 @@ const Register = () => {
             });
 
             setRegisterData(response);
-            setOpenVerifyEmailModal(true);
+            handleVerifyEmailModal();
             toast.success(response.message || 'Usuario registrado correctamente');
             clearForm();
         } catch (error) {
