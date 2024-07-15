@@ -13,7 +13,7 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 
 import { Image } from '@nextui-org/react';
 
-export default function Carousel() {
+export default function Carousel( { ads } ) {
   const progressCircle = useRef(null);
   const progressContent = useRef(null);
   const onAutoplayTimeLeft = (s, time, progress) => {
@@ -37,42 +37,17 @@ export default function Carousel() {
         onAutoplayTimeLeft={onAutoplayTimeLeft}
         className="mySwiper h-[305px]"
       >
-        <SwiperSlide>
+        {ads.map((ad, index) => (
+          <SwiperSlide key={index}>
             <Image
-                isBlurred
-                removeWrapper
-                alt="Relaxing app background"
-                className="z-0 object-cover"
-                src="https://nextui.org/images/card-example-4.jpeg"
+              isBlurred
+              removeWrapper
+              alt={ad.title}
+              className="z-0 object-cover"
+              src={ad.imageUrl}
             />
-        </SwiperSlide>
-        <SwiperSlide>
-            <Image
-                isBlurred
-                removeWrapper
-                alt="Relaxing app background"
-                className="z-0 object-cover"
-                src="https://nextui.org/images/card-example-3.jpeg"
-            />
-        </SwiperSlide>
-        <SwiperSlide>
-            <Image
-                isBlurred
-                removeWrapper
-                alt="Relaxing app background"
-                className="z-0 object-cover"
-                src="https://nextui.org/images/card-example-2.jpeg"
-            />
-        </SwiperSlide>
-        <SwiperSlide>
-            <Image
-                isBlurred
-                removeWrapper
-                alt="Relaxing app background"
-                className="z-0 object-cover"
-                src="https://nextui.org/images/card-example-1.jpeg"
-            />
-        </SwiperSlide>
+          </SwiperSlide>
+        ))}
         <div className="autoplay-progress" slot="container-end">
           <svg viewBox="0 0 48 48" ref={progressCircle}>
             <circle cx="24" cy="24" r="20"></circle>

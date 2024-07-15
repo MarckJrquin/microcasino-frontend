@@ -236,10 +236,37 @@ const getCreditTransactionsHistory = async ( userId ) => {
     }
 }
 
+const getGameTransactionsHistory = async ( userId ) => {
+    try {
+        const response = await axios.get(`${API_URL}/user/${userId}/games`);
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
 
 const withdrawCredits = async ( credits, userId ) => {
     try {
         const response = await axios.post(`${API_URL}/user/withdraw-credits`, { credits, userId });
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+const recordWin = async ( userId, credits ) => {
+    try {
+        const response = await axios.post(`${API_URL}/user/record-win`, { credits });
+        return handleResponse(response);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+const recordBet = async ( userId, credits ) => {
+    try {
+        const response = await axios.post(`${API_URL}/user/record-bet`, { credits });
         return handleResponse(response);
     } catch (error) {
         handleError(error);
@@ -267,7 +294,10 @@ const BillingService = {
     getTrasactionDetails,
     getUserCreditsBalance,
     getCreditTransactionsHistory,
+    getGameTransactionsHistory,
     withdrawCredits,
+    recordWin,
+    recordBet
 }
 
 

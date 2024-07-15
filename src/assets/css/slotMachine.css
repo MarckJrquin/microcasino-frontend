@@ -1,0 +1,26 @@
+.slot-machine {
+    margin: 20px;
+    text-align: center;
+}
+
+.reels {
+    display: flex;
+    font-size: 2rem;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.reel {
+    margin: 0 10px;
+}
+
+button {
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 10px 20px;
+}
+
+p {
+    font-size: 1.2rem;
+    margin-top: 20px;
+}

@@ -96,15 +96,15 @@ const ComingSoon = () => {
                   <p className="text-center text-gray-500 text-xs font-normal leading-normal w-full">Segundos</p>
                 </div>
               </div>
-              {/* <div className="w-full flex-col justify-center items-center gap-5 flex">
+              <div className="w-full flex-col justify-center items-center gap-5 flex">
                 <h6 className="text-center text-emerald-400 text-base font-semibold leading-relaxed">Fecha de Lanzamiento: 15 de Agosto, 2024</h6>
-                <div className="justify-center items-center gap-2.5 flex sm:flex-row flex-col">
+                {/* <div className="justify-center items-center gap-2.5 flex sm:flex-row flex-col">
                   <input type="text" className="w-80 focus:outline-none px-3.5 py-2 shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] text-gray-900 placeholder-gray-400 text-sm font-normal leading-relaxed h-10 bg-white rounded-lg border border-gray-200 justify-start items-center gap-1.5 inline-flex" placeholder="Type your mail..." />
                   <button className="sm:w-fit w-full px-3.5 py-2 bg-emerald-400 hover:bg-emerald-600 transition-all duration-700 ease-in-out rounded-lg shadow-[0px_1px_2px_0px_rgba(16,_24,_40,_0.05)] justify-center items-center flex">
                     <span className="px-1.5 text-gray-900 text-sm font-medium leading-6 whitespace-nowrap">Notify Me</span>
                   </button>
-                </div>
-              </div> */}
+                </div> */}
+              </div>
             </div>
           </div>
           <p className="text-center text-gray-500 text-sm font-normal leading-snug">Ponte en contacto con nosotros: <a href="mailto:microcasino@microcasino.com" className="hover:text-gray-100 transition-all duration-700 ease-in-out"> microcasino@microcasino.com</a></p>

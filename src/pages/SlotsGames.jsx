@@ -40,6 +40,7 @@ const SlotsGames = () => {
         try {
             const data = await GameService.getGamesByType(3); // 2 -> tipo TragaMonedas
             setGames(data);
+            console.log(data);
         } catch (error) {
             toast.error(error.message || 'Error desconocido');
         }
@@ -52,7 +53,11 @@ const SlotsGames = () => {
                 navigate('/login');
             }, 1100);
         } else {
-            navigate(url);
+            if(url) {
+                navigate(url);
+            }else{
+                navigate('/games/coming-soon');
+            }  
         }
     };
 

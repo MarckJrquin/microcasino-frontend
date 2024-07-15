@@ -14,6 +14,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, Navba
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoins, faChevronDown, faDiceOne, faDiceTwo, faDiceThree, faDiceFour, faDice } from "@fortawesome/free-solid-svg-icons";
 
+import microcasinoLogo from "../assets/images/logo/microcasinoLOGO.png";
 
 const Nav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -129,7 +130,9 @@ const Nav = () => {
           className="md:hidden"
         />
         <NavbarBrand as={Link} href="/home">
-          <FontAwesomeIcon icon={faCoins} className="font-bold text-black dark:text-white"/>
+          {/* <FontAwesomeIcon icon={faCoins} className="font-bold text-black dark:text-white"/> */}
+          <img src={microcasinoLogo} alt="Microcasino Logo" className="h-8 w-auto"/>
+          {/* <Avatar src={microcasinoLogo} alt="microcasino logo" ></Avatar> */}
           <p className="font-bold text-black dark:text-white pl-2">
             MICROCASINO
           </p>
@@ -222,8 +225,8 @@ const Nav = () => {
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Sesión iniciada como</p>
-                <p className="font-semibold">{profileData?.email}</p>
+                <p className="font-semibold text-sm">Sesión iniciada como</p>
+                <p className="font-semibold text-sm">{profileData?.email}</p>
               </DropdownItem>
               <DropdownItem key="myprofile" as={Link} href="/profile" className="text-black dark:text-white">Mi Perfil</DropdownItem>
               <DropdownItem key="help" as={Link} href="/help" className="text-black dark:text-white">Ayuda</DropdownItem>

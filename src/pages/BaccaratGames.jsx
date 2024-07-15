@@ -31,7 +31,11 @@ const BaccaratGames = () => {
                 navigate('/login');
             }, 1100);
         } else {
-            navigate(url);
+            if(url) {
+                navigate(url);
+            }else{
+                navigate('/games/coming-soon');
+            }  
         }
     };
 

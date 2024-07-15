@@ -15,6 +15,7 @@ import UserBankAccountModal from '../components/UserBankAccountModal';
 import AddressCard from '../components/AddressCard';
 import BankAccountCard from '../components/BankAccountCard';
 import TrasactionsTable from '../components/TrasactionsTable';
+import TransactionsGamesTable from '../components/TransactionsGamesTable';
 
 
 // UI Components - NextUI
@@ -393,7 +394,7 @@ const Profile = () => {
                                                 }
                                                 >
                                                     <Card>
-                                                        <TrasactionsTable userData={profileData} />
+                                                        <TransactionsGamesTable userData={profileData} />
                                                     </Card>
                                                 </Tab>
                                             </Tabs>

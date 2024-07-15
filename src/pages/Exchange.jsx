@@ -26,6 +26,7 @@ const Exchange = () => {
     const [creditsForDeposit, setCreditsForDeposit] = useState(0);
     const [withdrawCredits, setWithdrawCredits] = useState(0);
     const [realMoneyForWithdraw, setRealMoneyForWithdraw] = useState(0);
+    const [profileRefreshFlag, setProfileRefreshFlag] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -60,7 +61,7 @@ const Exchange = () => {
         }
  
         fetchProducts();
-    }, []);
+    }, [profileRefreshFlag]);
 
 
     const handlePurchaseProduct = async (product) => {
@@ -80,6 +81,8 @@ const Exchange = () => {
         } catch (error) {
             toast.error(error.message || "Error processing the purchase");
         }
+
+        setProfileRefreshFlag(prev => !prev);
     };
 
 
@@ -103,6 +106,8 @@ const Exchange = () => {
         } catch (error) {
             toast.error(error.message || "Error processing the purchase");
         }
+
+        setProfileRefreshFlag(prev => !prev);
     };
 
 
@@ -124,6 +129,8 @@ const Exchange = () => {
         } catch (error) {
             toast.error(error.message || "Error processing the withdraw");
         }
+
+        setProfileRefreshFlag(prev => !prev);
     };
 
 

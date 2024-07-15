@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoins, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
+import microcasinoLogo from "../assets/images/logo/microcasinoLOGO.png";
+
 const Footer = () => {
     return (
         <>
@@ -100,7 +102,8 @@ const Footer = () => {
                     <div className="mb-4 md:mb-0">
                         <Link to={'/home'} >
                             <div className="flex items-center text-black dark:text-white">
-                                <FontAwesomeIcon icon={faCoins} className="h-8"/>
+                                {/* <FontAwesomeIcon icon={faCoins} className="h-8"/> */}
+                                <img src={microcasinoLogo} alt="Microcasino Logo" className="h-8 w-auto"/>
                                 <span className="ml-1 self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                                     MICROCASINO
                                 </span>

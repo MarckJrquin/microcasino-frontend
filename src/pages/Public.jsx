@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import BillingService from '../services/billing.service';
 import GameService from '../services/game.service';
+import BannerAddService from '../services/bannerAdd.service';
 
 import Carousel from '../components/Swiper';
 
@@ -17,10 +18,12 @@ import '../assets/css/swiper.css';
 
 const Public = () => {
   const [gameTypes, setGameTypes] = useState([]);
+  const [swiperAds, setSwiperAds] = useState([]);
+  const [cardAds, setCardAds] = useState([]);
 
   useEffect(() => {
     fetchGameTypes();
-    console.log(gameTypes);
+    fetchAds();
   }, []);
 
   const fetchGameTypes = async () => {
@@ -30,6 +33,27 @@ const Public = () => {
     } catch (error) {
         toast.error(error.message || 'Error desconocido');
     }
+  };
+
+  const fetchAds = async () => {
+    try {
+      const ads = await BannerAddService.getAllBannerAdds();
+      const swiperAds = ads.filter(ad => ad.type === 'swiper');
+      const cardAds = ads.filter(ad => ad.type === 'card');
+      
+      setSwiperAds(swiperAds);
+      setCardAds(shuffleArray(cardAds).slice(0, 2)); // Selecciona aleatoriamente 2 anuncios tipo card
+    } catch (error) {
+      toast.error(error.message || 'Error desconocido');
+    }
+  };
+
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   };
 
   return (
@@ -55,10 +79,41 @@ const Public = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-lg mx-auto md:max-w-2xl lg:max-w-full">
           <div className="relative w-full h-[305px] md:col-span-2">
             <div className="bg-transparent rounded-2xl flex justify-between flex-row flex-wrap">
-              <Carousel />
+              <Carousel ads={swiperAds} />
             </div>
           </div>
-          <div className="relative w-full h-auto">
+          {cardAds.map((ad, index) => (
+            <div className="relative w-full h-auto" key={index}>
+              <div className="bg-indigo-500 rounded-2xl h-full">
+                <Card isFooterBlurred className="w-full h-[305px] col-span-12 sm:col-span-7">
+                  <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                    <p className="text-tiny text-white/60 uppercase font-bold">{ad.title}</p>
+                    <h4 className="text-white/90 font-medium text-xl">{ad.description}</h4>
+                  </CardHeader>
+                  <Image
+                    removeWrapper
+                    alt={ad.title}
+                    className="z-0 w-full h-full object-cover"
+                    src={ad.imageUrl}
+                  />
+                  <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                    <div className="flex flex-grow gap-2 items-center">
+                      <Image
+                        alt="App icon"
+                        className="rounded-full w-10 h-11 bg-black"
+                        src="https://nextui.org/images/breathing-app-icon.jpeg"
+                      />
+                      <div className="flex flex-col">
+                        <p className="text-tiny text-white/60">{ad.description}</p>
+                      </div>
+                    </div>
+                    <Button radius="full" size="sm" as={Link} href={ad.linkUrl}>Ver Más</Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            </div>
+          ))}
+          {/* <div className="relative w-full h-auto">
             <div className="bg-indigo-500 rounded-2xl h-full">
               <Card isFooterBlurred className="w-full h-[305px] col-span-12 sm:col-span-7">
                 <CardHeader className="absolute z-10 top-1 flex-col items-start">
@@ -117,7 +172,7 @@ const Public = () => {
                 </CardFooter>
               </Card>
             </div>
-          </div>   
+          </div>    */}
         </div>
       </div>
     </section>   

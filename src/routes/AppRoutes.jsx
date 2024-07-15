@@ -24,6 +24,7 @@ import BlackjackGames from "../pages/BlackjackGames";
 import SlotsGames from "../pages/SlotsGames";
 import BaccaratGames from "../pages/BaccaratGames";
 import SlotGame3 from "../components/SlotGame3";
+import SlotMachine from "../components/SlotMachine";
 import ComingSoon from "../pages/ComingSoon";
 
 import Exchange from "../pages/Exchange";
@@ -64,7 +65,8 @@ const App = () => {
         <Route path="/games/blackjack" element={<BlackjackGames />} />
         <Route path="/games/slots" element={<SlotsGames />} />
         <Route path="/games/baccarat" element={<BaccaratGames />} />
-        <Route path="/games/slotgame3" element={<SlotGame3 />} />
+        <Route path="/games/slots/3slots" element={<SlotGame3 />} />
+        <Route path="/games/slotmachine" element={<SlotMachine />} />
         <Route path="/games/coming-soon" element={<ComingSoon />} />
 
         {/* catch all */}
